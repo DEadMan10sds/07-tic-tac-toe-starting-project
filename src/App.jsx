@@ -11,28 +11,8 @@ const initialGameBoard = [
   [null, null, null],
 ];
 
-function changePlayer(gameTurns) {
-  let currentPlayer = "X";
-  if (gameTurns.length > 0 && gameTurns[0].player === "X") currentPlayer = "O";
-
-  return currentPlayer;
-}
-
-function App() {
-  const [players, setPlayers] = useState({ x: "Player 1", o: "Player 1" });
-  const [gameTurns, setGameTurns] = useState([]);
-  const currentPlayer = changePlayer(gameTurns);
-  let gameBoard = [...initialGameBoard.map((arr) => [...arr])],
-    winner = null;
-
-  for (const turn of gameTurns) {
-    const { square, player } = turn;
-    const { row, col } = square;
-    gameBoard[row][col] = player;
-  }
-
-  const hasDraw = gameTurns.length === 9 && !winner;
-
+function getWinner(gameBoard, players) {
+  let winner = null;
   for (const combination of WINNING_COMBINATIONS) {
     const firstSquare = gameBoard[combination[0].row][combination[0].column];
     const secondSquare = gameBoard[combination[1].row][combination[1].column];
@@ -45,6 +25,31 @@ function App() {
     )
       winner = players[firstSquare];
   }
+
+  return winner;
+}
+
+function changePlayer(gameTurns) {
+  let currentPlayer = "X";
+  if (gameTurns.length > 0 && gameTurns[0].player === "X") currentPlayer = "O";
+
+  return currentPlayer;
+}
+
+function App() {
+  const [players, setPlayers] = useState({ x: "Player 1", o: "Player 1" });
+  const [gameTurns, setGameTurns] = useState([]);
+  const currentPlayer = changePlayer(gameTurns);
+  let gameBoard = [...initialGameBoard.map((arr) => [...arr])];
+
+  for (const turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+    gameBoard[row][col] = player;
+  }
+
+  const hasDraw = gameTurns.length === 9 && !winner;
+  const winner = getWinner(gameBoard, players);
 
   function handleClickSquare(row, col) {
     setGameTurns((prevTurns) => {
